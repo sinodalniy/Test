@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Блиц-тест на созависимость</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --lavender: #7B6FA0;
+    --lavender-light: #E8E4F0;
+    --lavender-pale: #F4F2F9;
+    --sage: #8FA68E;
+    --text: #2C2840;
+    --text-soft: #6B6580;
+    --white: #FFFFFF;
+    --warning: #C17B5A;
+    --warning-bg: #FDF0E8;
+    --danger: #A3584A;
+    --danger-bg: #FAEAE7;
+    --ok: #5A8C6E;
+    --ok-bg: #EAF3EE;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--lavender-pale);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 16px 64px;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lavender);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 6vw, 40px);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--text-soft);
+    line-height: 1.6;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: var(--lavender);
+    margin: 24px auto;
+    border-radius: 2px;
+  }
+
+  .progress-bar {
+    background: var(--lavender-light);
+    border-radius: 4px;
+    height: 4px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--lavender);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .question-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 12px;
+    border: 1.5px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .question-card.answered {
+    border-color: var(--lavender-light);
+  }
+
+  .question-num {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--lavender);
+    margin-bottom: 10px;
+  }
+
+  .question-text {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--text);
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+
+  .options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .option-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--lavender-light);
+    background: var(--lavender-pale);
+    color: var(--text-soft);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: center;
+  }
+
+  .option-btn:hover {
+    border-color: var(--lavender);
+    color: var(--lavender);
+    background: var(--white);
+  }
+
+  .option-btn.selected {
+    background: var(--lavender);
+    border-color: var(--lavender);
+    color: var(--white);
+  }
+
+  .submit-wrap {
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  .submit-btn {
+    background: var(--lavender);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 16px 40px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .submit-btn.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .submit-btn.active:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  .result-card {
+    display: none;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 36px 28px;
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  .result-card.show { display: block; }
+
+  .result-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+  }
+
+  .result-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .result-score {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+    background: var(--lavender-light);
+    color: var(--lavender);
+  }
+
+  .result-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-soft);
+    margin-bottom: 20px;
+  }
+
+  .disclaimer {
+    font-size: 13px;
+    color: var(--text-soft);
+    line-height: 1.6;
+    padding: 14px 16px;
+    background: var(--lavender-pale);
+    border-radius: 10px;
+    border-left: 3px solid var(--lavender);
+    text-align: left;
+  }
+
+  .restart-btn {
+    margin-top: 24px;
+    background: transparent;
+    border: 1.5px solid var(--lavender-light);
+    color: var(--lavender);
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .restart-btn:hover {
+    background: var(--lavender-light);
+  }
+
+  .result-ok { border-top: 4px solid var(--ok); }
+  .result-warning { border-top: 4px solid var(--warning); }
+  .result-danger { border-top: 4px solid var(--danger); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="eyebrow">Психологический опросник</div>
+    <h1>Блиц-тест на созависимость</h1>
+    <div class="divider"></div>
+    <p class="subtitle">Отметьте, насколько каждое утверждение соответствует вашему опыту. Это займёт около 2 минут.</p>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <div id="questions"></div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="submitBtn" onclick="showResult()">Узнать результат</button>
+  </div>
+
+  <div class="result-card" id="result"></div>
+</div>
+
+<script>
+const questions = [
+  "Мне трудно сказать «нет», даже когда я устал(а) или не хочу",
+  "Моё настроение сильно зависит от состояния другого человека",
+  "Я чувствую ответственность за его эмоции, поступки и выбор",
+  "Я оправдываю его поведение, даже когда мне больно или неприятно",
+  "Мне страшно остаться одному(одной), даже если отношения истощают",
+  "Я чувствую вину, когда выбираю себя, отдых или личные интересы",
+  "Я чаще думаю о проблемах другого, чем о своих потребностях",
+  "Конфликты пугают меня больше, чем ощущение внутреннего дискомфорта"
+];
+
+const options = [
+  { label: "Да", value: 1 },
+  { label: "Иногда", value: 0.5 },
+  { label: "Нет", value: 0 }
+];
+
+const answers = new Array(questions.length).fill(null);
+
+function render() {
+  const container = document.getElementById('questions');
+  container.innerHTML = questions.map((q, i) => `
+    <div class="question-card ${answers[i] !== null ? 'answered' : ''}" id="card-${i}">
+      <div class="question-num">Вопрос ${i + 1} из ${questions.length}</div>
+      <div class="question-text">${q}</div>
+      <div class="options">
+        ${options.map(o => `
+          <button class="option-btn ${answers[i] === o.value ? 'selected' : ''}"
+            onclick="select(${i}, ${o.value})">
+            ${o.label}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+  updateSubmit();
+}
+
+function select(qIndex, value) {
+  answers[qIndex] = value;
+  render();
+}
+
+function updateProgress() {
+  const filled = answers.filter(a => a !== null).length;
+  document.getElementById('progress').style.width = (filled / questions.length * 100) + '%';
+}
+
+function updateSubmit() {
+  const btn = document.getElementById('submitBtn');
+  const allAnswered = answers.every(a => a !== null);
+  btn.classList.toggle('active', allAnswered);
+}
+
+function showResult() {
+  const score = answers.reduce((sum, v) => sum + (v || 0), 0);
+  const resultCard = document.getElementById('result');
+
+  let icon, title, scoreLabel, text, cls;
+
+  if (score <= 2) {
+    icon = '🌿';
+    cls = 'result-ok';
+    title = 'Границы в порядке';
+    scoreLabel = `${score} балла из 8`;
+    text = 'Судя по ответам, вы достаточно хорошо чувствуете свои границы и не склонны растворяться в проблемах другого человека. Это важный ресурс — берегите его.';
+  } else if (score <= 4) {
+    icon = '🌸';
+    cls = 'result-warning';
+    title = 'Стоит присмотреться';
+    scoreLabel = `${score} балла из 8`;
+    text = 'Некоторые признаки созависимости присутствуют. Возможно, в отдельных отношениях вы берёте на себя слишком много. Это хороший момент, чтобы честно посмотреть на свои паттерны.';
+  } else {
+    icon = '💜';
+    cls = 'result-danger';
+    title = 'Есть признаки созависимости';
+    scoreLabel = `${score} баллов из 8`;
+    text = 'Результат указывает на устойчивую созависимую модель поведения. Это не приговор — это точка, с которой начинается изменение. Вы заслуживаете отношений, в которых есть место вашим потребностям.';
+  }
+
+  resultCard.className = `result-card show ${cls}`;
+  resultCard.innerHTML = `
+    <div class="result-icon">${icon}</div>
+    <div class="result-title">${title}</div>
+    <div class="result-score">${scoreLabel}</div>
+    <div class="result-text">${text}</div>
+    <div class="disclaimer">
+      Этот тест — не диагноз. Его цель — подсветить повторяющиеся паттерны, чтобы вы смогли честно посмотреть на ситуацию со стороны.
+    </div>
+    <button class="restart-btn" onclick="restart()">Пройти заново</button>
+  `;
+
+  resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function restart() {
+  answers.fill(null);
+  document.getElementById('result').className = 'result-card';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+</script>
+</body>
+</html>
